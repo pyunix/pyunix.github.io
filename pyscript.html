@@ -9,6 +9,8 @@ Tries to be as "python" as possible
 
 <!DOCTYPE html>
 <html lang="en">
+
+<!--- The standard pyscript headers --->
 <head>
     <meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" Content="IE-Edge">
@@ -17,40 +19,99 @@ Tries to be as "python" as possible
 	<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
 	<script defer src="https://pyscript.net/latest/pyscript.js"></script>
 </head>
-<body>
 
-	<div style="minheight: 200" id="myscreen" value="This is my screen">
-		Hello
-	</div>
+<!---
+<frameset cols="50%,*"></frameset>
+--->
+
+<body style="background-color:black; color:white">
+	<head><b> Hello T! </b></head>
+	<py-config>
+		packages = ["pyodide-http", "pip", "ssl", "urllib3", "requests"]
+		terminal = true
+		
+		[[fetch]]
+		from = "https://pyunix.github.io/"
+		files = ["pyscript.html"]
+		
+
+	</py-config>
 	<py-script>
-		from js import document
-		from pyodide.ffi.wrappers import add_event_listener
-		from io import StringIO
-		import sys
+		#from js import document
+		#from pyodide.ffi.wrappers import add_event_listener
+		#from io import StringIO
+		#import sys
+		#import pyodide_http
+		#import micropip
+		#import pip
+		#import urllib
+		#import urllib3
+		#import ssl
+		
+		import os
+		from pyodide.http import open_url
 
-		RealStdout = sys.stdout
-		RealStderr = sys.stderr
-		global ScreenBuffer
-		ScreenBuffer = "Welcome to Python Xterminal"
-		xdisp = Element("myscreen")
+		
+		#pyodide_http.patch_all()
+				
+		# Don't try this at home...
+		#pip.main(['install', 'wget'])
+		
+		
+		
+		
+		#RealStdout = sys.stdout
+		#RealStderr = sys.stderr
+		#ScreenBuffer = []
+		#ScreenBuffer.append("Welcome to Python Xterminal")
+		#xdisp = Element("myscreen")
 
-		def write_stdout(text):
-			print(text,file=RealStdout)
+		def wget(url,fname):
+			PUOut = open_url(url)
+			with open(fname, 'w') as f:
+				f.write(PUOut.read())
 
-		def write_stderr(text):
-			print(text,file=RealStderr)
+		def cat(fname):
+			with open(fname, 'r') as f:
+				print(f.read())
+			
+		def run(thiscmd):
+			exec(open(thiscmd).read())
+
+		def mkdir(newpath):
+			os.mkdir(newpath)
+			
+		def ls():
+			for i in os.listdir():
+				display(i)
+			
+		def pwd():
+			display(os.getcwd())
+		
+		def cd(thispath):
+			os.chdir(thispath)
+		
+		mkdir("/kernel")
+		wget("https://pyunix.github.io/pyscript.html","x.out")
+		
+				
+		#def write_stdout(text):
+		#	print(text,file=RealStdout)
+
+		#def write_stderr(text):
+		#	print(text,file=RealStderr)
 
 
-		def handle_keypress(evt):
-			#ScreenBuffer += str(evt.key)
-			ScreenBuffer = "abc" + "def"
-			xdisp.element.innerHTML = ScreenBuffer  
-			write_stdout("pressed1 "+str(evt.key))
+		#def handle_keypress(evt):
+		#	#ScreenBuffer += str(evt.key)
+		#	ScreenBuffer = "abc" + "def"
+		#	xdisp.element.innerHTML = ScreenBuffer  
+		#	write_stdout("pressed1 "+str(evt.key))
 
-		document.onkeydown = handle_keypress  
+		#document.onkeydown = handle_keypress  
   
-		NewStdout = StringIO()
-		sys.stdout = NewStdout
+		#NewStdout = StringIO()
+		#sys.stdout = NewStdout
 	</py-script>
 	<div> 
 		<py-repl id="my-repl" auto-generate="true"> </py-repl>
@@ -58,3 +119,49 @@ Tries to be as "python" as possible
 
 </body>
 </html>
+
+<!---
+
+  <div> 
+    <py-repl id="my-repl" auto-generate="true"> </py-repl>
+  </div>
+  
+  
+  
+  <py-register-widget src="./xterm.py" name="myxterm"></py-register-widget>
+  <input type="text" id="myline"/>
+  <button id="submit-button" type="submit" py-Click="xfunc()"> OK </button>
+  <div class="py-box" style="minheight=200">
+    <input id="new-task-content" />
+  </div>
+
+	<py-terminal id="xterm" rows=30></py-terminal>
+
+  <py-script src="./main.py"></py-script>
+
+  <textarea id="mytext" rows="25" cols="80">$</textarea>
+
+<py-script>
+    from js import document
+    def runTextInTag(id):
+        src = document.getElementById(id).value
+        exec(src)
+</py-script>
+
+<button py-click="runTextInTag('area1')" id="run">Run!</button>
+
+"<code style=color:red;>12</code><code style=color:black;>12"
+"<abbr style=color:red;>12</abbr><abbr style=color:black;>345</abbr><br>xyz"
+"<pre style=color:red;>12</pre><pre style=color:black;>34\ndef"
+
+from io import StringIO
+import sys
+tmp = sys.stdout
+my_result = StringIO()
+sys.stdout = my_result
+print('hello world') # output stored in my_result
+sys.stdout = tmp
+print(my_result.getvalue())
+
+
+--->

@@ -1,0 +1,3 @@
+#!/scripts/python
+from pyunix_coreutils import ls
+ls()
